@@ -2,7 +2,7 @@ import json
 import datetime
 import logging
 import os
-from typing import Dict
+from typing import List, Dict
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -36,11 +36,11 @@ except Exception as e:
 # gerenciador de conexões
 class ConnectionManager:
     def __init__(self):
-        self.active_connections: Dict[str, WebSocket] = []
+        self.active_connections: Dict[str, WebSocket] = {}
 
     async def connect(self, websocket: WebSocket, user_id: str):
         await websocket.accept()
-        self.active_connections.append(websocket)
+        self.active_connections[user_id] = websocket
         logging.info(f"Cliente {user_id} conectado!")
 
     def disconnect(self, user_id: str):

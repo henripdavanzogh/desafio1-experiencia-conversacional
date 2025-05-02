@@ -7,13 +7,12 @@ import { Message } from '../types';
 import furiaData from '../data/furiaData.json';
 
 const ChatPage = () => {
-  const [messages, setMessages] = useState<Message[]>([]); //lista de mensagens
-  const [isConnected, setIsConnected] = useState(false); //conexão ativada ou não
+  const [messages, setMessages] = useState<Message[]>([]);
+  const [isConnected, setIsConnected] = useState(false);
   const ws = useRef<WebSocket | null>(null); //referência para o WebSocket
-  const userId = useRef<string>(uuidv4()); // id do usuário gerado aleatoriamente
+  const userId = useRef<string>(uuidv4()); // id do usuário
 
   const addMessage = useCallback((sender: Message['sender'], text: string) => {
-    //
     const newMessage: Message = {
       id: uuidv4(),
       sender,
@@ -65,13 +64,35 @@ const ChatPage = () => {
       setIsConnected(false);
       ws.current = null;
     };
-  }, []);
 
-  return (
-    <div>
-      <p>CHAT PAGE</p>
-    </div>
-  );
+    return () => {
+      // verifica se a conexão WebSocket existe e está aberta
+      if (socket && socket.readyState === WebSocket.OPEN) {
+        console.log('[WebSocket] A fechar conexão na limpeza do componente...');
+        // fecha a conexão
+        socket.close(1000, 'Navegação encerrada.');
+      }
+    };
+  }, [addMessage]);
+
+  // handler para enviar mensagens
+  const handleSendMessage = (text: string) => {
+    if (ws.current && ws.current.readyState === WebSocket.OPEN) {
+      console.log('-> mensagem enviada:', text);
+      ws.current.send(text);
+
+      if (!text.trim().startsWith('!')) {
+        addMessage(userId.current, text); //usa o id da sessão atual como remetente
+      }
+    } else {
+      addMessage(
+        'System',
+        'Não está conectado ao chat. Impossível enviar mensagem.',
+      );
+    }
+  };
+
+  return <p>vish</p>;
 };
 
 export default ChatPage;
