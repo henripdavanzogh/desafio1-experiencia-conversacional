@@ -1,0 +1,25 @@
+{
+  "schedule": [
+    {
+      "id": "s1",
+      "opponent": "NAVI",
+      "tournament": "IEM Cologne Play-in",
+      "date": "2025-07-25T10:00:00Z"
+    }
+  ],
+  "lineup": [
+    { "id": "p1", "name": "molodoy", "role": "AWPer" },
+    { "id": "p2", "name": "yuurih", "role": "Rifler" },
+    { "id": "p3", "name": "KSCERATO", "role": "Rifler" },
+    { "id": "p4", "name": "FalleN", "role": "IGL/Rifler" },
+    { "id": "p5", "name": "YEKINDAR", "role": "Rifler" }
+  ],
+  "results": [
+    {
+      "id": "r1",
+      "opponent": "G2",
+      "score": "1-2",
+      "tournament": "BLAST Premier Spring Final"
+    }
+  ]
+}

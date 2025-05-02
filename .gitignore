@@ -38,3 +38,6 @@ dist/
 # Build tools
 turbo/
 .cache/
+
+__pycache__
+*.py[cod]
