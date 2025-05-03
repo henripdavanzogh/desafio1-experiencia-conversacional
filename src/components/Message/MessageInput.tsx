@@ -2,12 +2,16 @@ import React, { useState } from 'react';
 import { MessageInputProps } from '../../types/index';
 
 const MessageInput: React.FC<MessageInputProps> = ({ onSendMessage }) => {
-  const [inputValue, setInputValue] = useState('');
+  const [inputValue, setInputValue] = useState<string>('');
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (inputValue.trim() === '') {
-      onSendMessage('');
+    const trimmedValue = inputValue.trim();
+    if (trimmedValue) {
+      onSendMessage(trimmedValue);
+      setInputValue('');
+    } else {
+      console.log('Tentativa de enviar mensagem vazia ignorada.');
     }
   };
 
@@ -18,13 +22,11 @@ const MessageInput: React.FC<MessageInputProps> = ({ onSendMessage }) => {
         value={inputValue}
         onChange={(e) => setInputValue(e.target.value)}
         placeholder="Apareça no FURIA Chat!"
-        className=""
       />
-      <button type="submit" className="">
+      <button type="submit" disabled={!inputValue.trim()}>
         Enviar
       </button>
     </form>
   );
 };
-
 export default MessageInput;

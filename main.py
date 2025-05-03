@@ -2,7 +2,7 @@ import json
 import datetime
 import logging
 import os
-from typing import List, Dict
+from typing import Dict
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -38,107 +38,106 @@ class ConnectionManager:
     def __init__(self):
         self.active_connections: Dict[str, WebSocket] = {}
 
-    async def connect(self, websocket: WebSocket, user_id: str):
+    async def connect(self, websocket: WebSocket, client_id: str):
         await websocket.accept()
-        self.active_connections[user_id] = websocket
-        logging.info(f"Cliente {user_id} conectado!")
+        self.active_connections[client_id] = websocket
+        logging.info(f"Cliente '{client_id}' conectado.")
 
-    def disconnect(self, user_id: str):
-        if user_id in self.active_connections:
-            del self.active_connections[user_id]
-            logging.info(f"Cliente {user_id} desconectado!")
+    def disconnect(self, client_id: str):
+        websocket = self.active_connections.pop(client_id, None)
+        if websocket:
+            logging.info(f"Cliente '{client_id}' desconectado.")
 
-    async def send_personal_message(self, message: str, user_id: str):
-        if user_id in self.active_connections:
-            websocket = self.active_connections[user_id]
+    async def send_personal_message(self, message: str, client_id: str):
+        websocket = self.active_connections.get(client_id)
+        if websocket:
             try:
                 await websocket.send_text(message)
             except Exception as e:
-                logging.error(f"Erro ao enviar mensagem para {user_id}: {e}")
-                self.disconnect(user_id)
-
-    async def broadcast(self, message: str, sender_id: str = None):
-        disconnected_users = []
-        # para iterar sobre os usuários conectados
-        active_users = list(self.active_connections.items())
-        for user_id, websocket in active_users:
-            try:
-                # não enviar para o remetente
-                if user_id != sender_id:
-                    await websocket.send_text(message)
-            except Exception as e:
-                logging.warning(
-                    f"Erro de broadcast para {user_id}: {e}. Marcando para dc."
-                )
-                # dc = disconnect
-                disconnected_users.append(user_id)
+                self.disconnect(client_id)
+                logging.warning(f"Erro send_personal para {client_id}: {e}")
 
 
 manager = ConnectionManager()
 
 
+def format_game_date(date_str: str | None) -> str:
+    if not date_str:
+        return "Data Indefinida"
+    try:
+        game_date_utc = datetime.datetime.fromisoformat(date_str.replace("Z", "+00:00"))
+        brasilia_tz = datetime.timezone(datetime.timedelta(hours=-3))
+        game_date_br = game_date_utc.astimezone(brasilia_tz)
+        return game_date_br.strftime("%d/%m %H:%M")
+    except Exception:
+        return date_str
+
+
 # processamnento de comandos
-async def process_command(command: str, user_id: str) -> str:
-    lower_cmd = command.lower()
+def process_command(command: str) -> str:
+    lower_cmd = command.lower().strip()
     response = (
         f"Comando '{command}' não reconhecido. Tente !schedule, !lineup, !results"
     )
     logging.info(f"Processando comando: {lower_cmd}")
-
     if lower_cmd == "!schedule":
         schedule = furia_data.get("schedule", [])
         if schedule:
-            next_match = schedule[0]
-            try:
-                game_date_utc = datetime.datetime.fromisoformat(
-                    next_match.get("date", "").replace("Z", "+00:00")
+            response_lines = ["📅 **Próximos Jogos Agendados:**"]
+            max_items_to_show = 3
+            count = 0
+            for game in schedule:
+                if count >= max_items_to_show:
+                    break
+                opponent = game.get("opponent", "?")
+                tournament = game.get("tournament", "?")
+                date_str = format_game_date(game.get("date"))
+                response_lines.append(
+                    f"- vs {opponent} ({tournament}) em {date_str} (BRT)"
                 )
-                brasilia_tz = datetime.timezone(datetime.timedelta(hours=-3))
-                game_date_br = game_date_utc.astimezone(brasilia_tz)
-                date_str = game_date_br.strftime("%d/%m/%Y %H:%M")
-                opponent = next_match.get("opponent", "?")
-                tournament = next_match.get("tournament", "?")
-                response = f"Próximo jogo: FURIA vs {opponent} ({tournament}) em {date_str} (Horário de Brasília)"
-                return response
-            except (ValueError, KeyError, TypeError) as e:
-                logging.error(f"Erro ao processar data do jogo: {e}")
-                response = "Próxima data do jogo não encontrada ou inválida."
-                return response
-
-        elif lower_cmd == "!lineup":
-            lineup = furia_data.get("lineup", [])
-            if lineup:
-                player_list = ", ".join(
-                    [f"{p.get('name', '?')} ({p.get('role', '?')})" for p in lineup]
-                )
-                response = f"Line-up atual: {player_list}"
-                return response
+                count += 1
+            if count > 0:
+                response = "\n".join(response_lines)
             else:
-                response = "Lineup não encontrada. Acho que estão de férias!"
-
-        elif lower_cmd == "!results":
-            results = furia_data.get("results", [])
-            if results:
-                last_result = results[0]
-                opponent = last_result.get("opponent", "?")
-                score = last_result.get("score", "?")
-                tournament = last_result.get("tournament", "?")
-                response = f"Último resultado: FURIA {score} {opponent} ({tournament})"
-                return response
+                response = "Nenhum jogo agendado."
+        else:
+            response = "Nenhum jogo agendado."
+    elif lower_cmd == "!lineup":
+        lineup = furia_data.get("lineup", [])
+        if lineup:
+            response_lines = ["👥 **Line-up Atual:**"]
+            for p in lineup:
+                response_lines.append(f"- {p.get('name', '?')} ({p.get('role', '?')})")
+            response = "\n".join(response_lines)
+        else:
+            response = "Line-up não encontrada."
+    elif lower_cmd == "!results":
+        results = furia_data.get("results", [])
+        if results:
+            response_lines = ["📊 **Últimos Resultados:**"]
+            max_items_to_show = 3
+            count = 0
+            for result in results:
+                if count >= max_items_to_show:
+                    break
+                opponent = result.get("opponent", "?")
+                score = result.get("score", "?")
+                tournament = result.get("tournament", "?")
+                response_lines.append(f"- FURIA {score} {opponent} ({tournament})")
+                count += 1
+            if count > 0:
+                response = "\n".join(response_lines)
             else:
-                response = "Nenhum resultado recente encontrado."
-                return response
+                response = "Nenhum resultado encontrado."
+        else:
+            response = "Nenhum resultado recente."
+    return response
 
 
 # endpoint websocket
 @app.websocket("/ws/{user_id}")
 async def websocket_endpoint(websocket: WebSocket, user_id: str):
-    # simplificação: permitir ids duplicados
-    if user_id in manager.active_connections:
-        logging.warning(f"ID '{user_id}' já conectado.")
-
     await manager.connect(websocket, user_id)
-    await manager.broadcast(f"Usuário {user_id} entrou no chat!")
 
     try:
         while True:
@@ -151,19 +150,23 @@ async def websocket_endpoint(websocket: WebSocket, user_id: str):
                 )  # responde só pra quem pediu
             else:
                 # envia mensagem para todos os usuários conectados
-                await manager.broadcast(f"{user_id}:{data}", sender_id=user_id)
+                bot_response = "Não entendi. Tente !schedule, !lineup ou !results"
+                logging.info(
+                    f"Mensagem de '{user_id}' ignorada (não é comando): {data}"
+                )
 
     except WebSocketDisconnect:
         logging.info(f"Usuário '{user_id}' desconectou (normal).")
     except Exception as e:
         logging.error(f"Erro inesperado com '{user_id}': {e}")
     finally:
-        # Garante desconexão e notificação na saída do loop/try
         manager.disconnect(user_id)
-        await manager.broadcast(f"System:{user_id} saiu do chat.")
 
 
 # confirmando que o servidor está rodando na rota raiz
 @app.get("/")
 def read_root():
     return {"Status": "Servidor do Chat FURIA no ar!"}
+
+
+# uvicorn main:app --reload --host 0.0.0.0 --port 8000

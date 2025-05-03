@@ -1,22 +1,20 @@
-import React, { useState, useCallback, useRef, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { useState, useCallback, useRef, useEffect } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import MessageList from '../components/Message/MessageList';
 import MessageInput from '../components/Message/MessageInput';
 import { Message } from '../types';
-import furiaData from '../data/furiaData.json';
+import { ChatContainer, Content, MainContainer } from '../styles/StyleChatPage';
 
 const ChatPage = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [isConnected, setIsConnected] = useState(false);
   const ws = useRef<WebSocket | null>(null); //referência para o WebSocket
-  const userId = useRef<string>(uuidv4()); // id do usuário
 
-  const addMessage = useCallback((sender: Message['sender'], text: string) => {
+  const addMessage = useCallback((sender: 'user' | 'bot', text: string) => {
     const newMessage: Message = {
       id: uuidv4(),
-      sender,
-      text,
+      sender: sender,
+      text: text,
       timestamp: Date.now(),
     };
     setMessages((prevMessages) => [...prevMessages, newMessage]);
@@ -25,7 +23,8 @@ const ChatPage = () => {
   useEffect(() => {
     if (ws.current) return;
 
-    const serverAddress = `ws://localhost:8000/ws/${userId.current}`;
+    const connectionId = uuidv4();
+    const serverAddress = `ws://localhost:8000/ws/${connectionId}`;
     console.log(`[WebSocket] Conectando a: ${serverAddress}`);
 
     const socket = new WebSocket(serverAddress);
@@ -35,64 +34,84 @@ const ChatPage = () => {
     socket.onopen = () => {
       console.log('[WebSocket] Conexão aberta.');
       setIsConnected(true);
-      addMessage('System', 'Bem-vindo a FURIA Chat!');
+      // Sem mensagem de sistema
     };
 
     // handler quando a conexão é fechada
     socket.onclose = (event) => {
-      console.log(
-        `[WebSocket] Conexão fechada: Code=${event.code}, Reason=${event.reason}, Clean=${event.wasClean}`,
-      );
+      console.log(`[WebSocket] Conexão fechada: Code=${event.code}`);
       setIsConnected(false);
-      if (event.code !== 1000) {
-        // código 1000 = fechamento normal/limpo
-        addMessage(
-          'System',
-          `Desconectado do servidor (${event.code}). Tente recarregar.`,
-        );
-      }
-      ws.current = null; // limpa a instacia do WebSocket
+      ws.current = null;
     };
 
     // handler para erros na conexão
     socket.onerror = (error) => {
       console.error('[WebSocket] Erro:', error);
-      addMessage(
-        'System',
-        'Erro na conexão com o chat. O servidor pode estar offline.',
-      );
       setIsConnected(false);
       ws.current = null;
     };
 
-    return () => {
-      // verifica se a conexão WebSocket existe e está aberta
-      if (socket && socket.readyState === WebSocket.OPEN) {
-        console.log('[WebSocket] A fechar conexão na limpeza do componente...');
-        // fecha a conexão
-        socket.close(1000, 'Navegação encerrada.');
+    socket.onmessage = (event) => {
+      try {
+        const messageData = event.data as string;
+        console.log('<- [WebSocket] Recebido:', messageData);
+        const separatorIndex = messageData.indexOf(':');
+        if (separatorIndex > 0) {
+          const senderFromServer = messageData.substring(0, separatorIndex);
+          const text = messageData.substring(separatorIndex + 1).trim();
+
+          // Adiciona a mensagem APENAS se o remetente for 'BOT' (case-insensitive)
+          if (senderFromServer.toUpperCase() === 'BOT') {
+            addMessage('bot', text);
+          } else {
+            console.log(
+              '[WebSocket] Mensagem recebida de usuário ignorada:',
+              senderFromServer,
+            );
+          }
+        } else {
+          console.warn(
+            '[WebSocket] Mensagem recebida sem formato esperado:',
+            messageData,
+          );
+        }
+      } catch (e) {
+        console.error('Erro ao processar mensagem recebida:', e);
       }
+    };
+
+    return () => {
+      socket?.close(1000, 'Navegação ou Desmontagem');
     };
   }, [addMessage]);
 
   // handler para enviar mensagens
   const handleSendMessage = (text: string) => {
+    console.log(ws.current?.readyState);
+    console.log(WebSocket.OPEN);
     if (ws.current && ws.current.readyState === WebSocket.OPEN) {
-      console.log('-> mensagem enviada:', text);
       ws.current.send(text);
-
+      addMessage('user', text);
       if (!text.trim().startsWith('!')) {
-        addMessage(userId.current, text); //usa o id da sessão atual como remetente
+        addMessage('bot', text);
       }
     } else {
-      addMessage(
-        'System',
-        'Não está conectado ao chat. Impossível enviar mensagem.',
-      );
+      console.warn('Tentativa de enviar mensagem sem conexão.');
+      alert('Você não está conectado ao chat.');
     }
   };
 
-  return <p>vish</p>;
+  return (
+    <MainContainer>
+      <Content>
+        <h1>Chat FURIA</h1>
+        <ChatContainer>
+          <MessageList messages={messages} currentUserId={''} />
+          <MessageInput onSendMessage={handleSendMessage} />
+        </ChatContainer>
+      </Content>
+    </MainContainer>
+  );
 };
 
 export default ChatPage;

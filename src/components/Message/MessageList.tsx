@@ -1,55 +1,32 @@
-import React, { useRef, useEffect } from 'react';
-import { MessageListProps } from '../../types';
+import React from 'react';
+import { MessageListProps } from '../../types/index'; // Importa o tipo Message
 
-const MessageList: React.FC<MessageListProps> = ({ messages }) => {
-  const messagesEndRef = useRef<HTMLDivElement>(null);
-
-  // efeito para rolar para baixo quando aparecer novas mensagens
-  useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [messages]);
-
+const MessageList: React.FC<MessageListProps> = ({
+  messages,
+  currentUserId,
+}) => {
   const getSenderStyle = (sender: string): React.CSSProperties => {
-    if (sender === 'user') {
+    console.log(sender);
+    if (sender === currentUserId) {
       return {
         alignSelf: 'flex-end',
-        backgroundColor: '#dcf8c6',
-        color: '#333',
-      }; // Verde claro - Usuário
-    } else if (sender === 'bot') {
+        backgroundColor: 'var(--furia-gray-dark-2)',
+        color: 'var(--white-off)',
+      };
+    } else {
       return {
         alignSelf: 'flex-start',
-        backgroundColor: '#e5e5ea',
+        backgroundColor: 'var(--white-primary)',
         color: '#333',
-      }; // Cinza claro - Bot
-    } else {
-      // System ou outros usuários (se implementar depois)
-      return {
-        alignSelf: 'center',
-        backgroundColor: '#f1f1f1',
-        color: '#555',
-        fontStyle: 'italic',
-        fontSize: '0.9em',
-      }; // Cinza mais claro/itálico - Sistema
+      };
     }
   };
 
   return (
-    <div
-      style={{
-        height: '450px',
-        overflowY: 'auto',
-        border: '1px solid #eee',
-        marginBottom: '10px',
-        padding: '10px',
-        display: 'flex',
-        flexDirection: 'column',
-        gap: '10px' /* Espaço entre msgs */,
-      }}
-    >
+    <div>
       {messages.length === 0 && (
         <p style={{ textAlign: 'center', color: '#aaa' }}>
-          Nenhuma mensagem ainda. Digite algo ou um comando!
+          Nenhuma mensagem ainda. Digite algo ou "!schedule"!
         </p>
       )}
       {messages.map((msg) => (
@@ -60,26 +37,12 @@ const MessageList: React.FC<MessageListProps> = ({ messages }) => {
             padding: '8px 12px',
             borderRadius: '15px',
             wordWrap: 'break-word',
-            ...getSenderStyle(msg.sender), // Aplica estilo baseado no remetente
+            ...getSenderStyle(msg.sender), // Aplica o estilo simplificado
           }}
         >
-          {/* Opcional: Mostrar remetente se não for user ou bot */}
-          {msg.sender !== 'user' &&
-            msg.sender !== 'bot' &&
-            msg.sender !== 'System' && <strong>{msg.sender}:</strong>}
-          {/* Opcional: Mostrar remetente BOT explicitamente */}
           {msg.sender === 'bot' && <strong>FURIA Bot:</strong>}
           <span>{msg.text}</span>
-          {/* Adiciona timestamp */}
-          <div
-            style={{
-              fontSize: '0.7em',
-              color: '#666',
-              textAlign: 'right',
-              marginTop: '4px',
-              opacity: 0.8,
-            }}
-          >
+          <div>
             {new Date(msg.timestamp).toLocaleTimeString('pt-BR', {
               hour: '2-digit',
               minute: '2-digit',
@@ -87,8 +50,6 @@ const MessageList: React.FC<MessageListProps> = ({ messages }) => {
           </div>
         </div>
       ))}
-      {/* Elemento invisível no final para ajudar a rolar */}
-      <div ref={messagesEndRef} />
     </div>
   );
 };
