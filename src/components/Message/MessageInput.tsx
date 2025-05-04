@@ -1,5 +1,10 @@
 import React, { useState } from 'react';
 import { MessageInputProps } from '../../types/index';
+import {
+  Button,
+  InputContainer,
+  SendMessageContainer,
+} from '../../styles/StyleMessageInput.ts/style';
 
 const MessageInput: React.FC<MessageInputProps> = ({ onSendMessage }) => {
   const [inputValue, setInputValue] = useState<string>('');
@@ -16,17 +21,17 @@ const MessageInput: React.FC<MessageInputProps> = ({ onSendMessage }) => {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="f">
-      <input
+    <SendMessageContainer onSubmit={handleSubmit}>
+      <InputContainer
         type="text"
         value={inputValue}
         onChange={(e) => setInputValue(e.target.value)}
         placeholder="Apareça no FURIA Chat!"
       />
-      <button type="submit" disabled={!inputValue.trim()}>
+      <Button type="submit" disabled={!inputValue.trim()}>
         Enviar
-      </button>
-    </form>
+      </Button>
+    </SendMessageContainer>
   );
 };
 export default MessageInput;

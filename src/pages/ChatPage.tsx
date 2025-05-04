@@ -3,7 +3,14 @@ import { v4 as uuidv4 } from 'uuid';
 import MessageList from '../components/Message/MessageList';
 import MessageInput from '../components/Message/MessageInput';
 import { Message } from '../types';
-import { ChatContainer, Content, MainContainer } from '../styles/StyleChatPage';
+import {
+  ChatContainer,
+  ChatHeader,
+  ChatTitle,
+  ChatTitleItalic,
+  Content,
+  MainContainer,
+} from './style';
 
 const ChatPage = () => {
   const [messages, setMessages] = useState<Message[]>([]);
@@ -124,7 +131,11 @@ const ChatPage = () => {
   return (
     <MainContainer>
       <Content>
-        <h1>Chat FURIA</h1>
+        <ChatHeader>
+          <ChatTitle>
+            <ChatTitleItalic>FURIA </ChatTitleItalic> Chat
+          </ChatTitle>
+        </ChatHeader>
         <ChatContainer>
           <MessageList messages={messages} />
           <MessageInput onSendMessage={handleSendMessage} />

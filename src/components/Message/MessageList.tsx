@@ -1,29 +1,42 @@
 import React from 'react';
 import { MessageListProps } from '../../types/index'; // Importa o tipo Message
+import {
+  BotName,
+  HourText,
+  ListContainer,
+  NoMessageContainer,
+  SpanMessage,
+} from '../../styles/StyleMessageList.ts/style';
 
 const MessageList: React.FC<MessageListProps> = ({ messages }) => {
   const getSenderStyle = (sender: string): React.CSSProperties => {
     if (sender === 'user') {
       return {
+        display: 'flex',
+        flexDirection: 'column',
         alignSelf: 'flex-end',
         backgroundColor: 'var(--furia-gray-dark-2)',
         color: 'var(--white-off)',
+        fontFamily: 'var(--font-nunito)',
       };
     } else {
       return {
+        display: 'flex',
+        flexDirection: 'column',
         alignSelf: 'flex-start',
-        backgroundColor: 'var(--white-primary)',
-        color: '#333',
+        backgroundColor: 'var(--furia-gray-light)',
+        fontFamily: 'var(--font-nunito)',
+        color: 'var(--black-primary)',
       };
     }
   };
 
   return (
-    <div>
+    <ListContainer>
       {messages.length === 0 && (
-        <p style={{ textAlign: 'center', color: '#aaa' }}>
+        <NoMessageContainer>
           Nenhuma mensagem ainda. Digite algo ou "!schedule"!
-        </p>
+        </NoMessageContainer>
       )}
       {messages.map((msg) => (
         <div
@@ -36,17 +49,17 @@ const MessageList: React.FC<MessageListProps> = ({ messages }) => {
             ...getSenderStyle(msg.sender), // Aplica o estilo simplificado
           }}
         >
-          {msg.sender === 'bot' && <strong>FURIA Bot: </strong>}
-          <span>{msg.text}</span>
-          <div>
+          {msg.sender === 'bot' && <BotName>FURIA BOT: </BotName>}
+          <SpanMessage>{msg.text}</SpanMessage>
+          <HourText>
             {new Date(msg.timestamp).toLocaleTimeString('pt-BR', {
               hour: '2-digit',
               minute: '2-digit',
             })}
-          </div>
+          </HourText>
         </div>
       ))}
-    </div>
+    </ListContainer>
   );
 };
 
