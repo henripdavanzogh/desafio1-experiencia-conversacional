@@ -1,4 +1,4 @@
-# Chat FURIA Fans - Desafio Blip: Experiência Conversacional
+# Chat FURIA - Desafio Blip: Experiência Conversacional
 
 ![Logo da FURIA (Exemplo)](https://upload.wikimedia.org/wikipedia/pt/f/f9/Furia_Esports_logo.png)
 
@@ -57,10 +57,8 @@ Siga os passos abaixo para configurar e executar o projeto na sua máquina:
 **2. Clone o Repositório:**
 
 ```bash
-git clone [https://github.com/SEU_USUARIO/SEU_REPOSITORIO.git](https://github.com/SEU_USUARIO/SEU_REPOSITORIO.git)
-cd SEU_REPOSITORIO
-
-(Substitua SEU_USUARIO/SEU_REPOSITORIO pelo caminho real do seu repositório)
+git clone https://github.com/henripdavanzogh/desafio1-experiencia-conversacional.git
+cd desafio1-experiencia-conversacional
 
 3. Configure o Ambiente Python (Backend):
 
