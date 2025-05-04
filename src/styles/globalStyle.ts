@@ -14,6 +14,10 @@ export default createGlobalStyle`
         --furia-gray-medium: #777777;
         --furia-gray-light: #aaaaaa;
 
-        --font-family: "Nunito", sans-serif;
+        --furia-purple: #8000ff;
+        --furia-purple-light: #a64dff;
+
+        --font-nunito: "Nunito", sans-serif;
+        --font-Bebas: "Bebas Neue", sans-serif;
     }
 `;
