@@ -77,7 +77,7 @@ def format_game_date(date_str: str | None) -> str:
 def process_command(command: str) -> str:
     lower_cmd = command.lower().strip()
     response = (
-        f"Comando '{command}' não reconhecido. Tente !schedule, !lineup, !results"
+        f"Comando '{command}' não reconhecido. Tente !schedule, !lineup ou  !results."
     )
     logging.info(f"Processando comando: {lower_cmd}")
     if lower_cmd == "!schedule":
@@ -107,7 +107,7 @@ def process_command(command: str) -> str:
         if lineup:
             response_lines = ["👥 Line-up Atual:"]
             for p in lineup:
-                response_lines.append(f"- {p.get('name', '?')} ({p.get('role', '?')})")
+                response_lines.append(f" {p.get('name', '?')} ({p.get('role', '?')})")
             response = "\n".join(response_lines)
         else:
             response = "Line-up não encontrada."
@@ -149,8 +149,6 @@ async def websocket_endpoint(websocket: WebSocket, user_id: str):
                     f"BOT:{bot_response}", user_id
                 )  # responde só pra quem pediu
             else:
-                # envia mensagem para todos os usuários conectados
-                bot_response = "Não entendi. Tente !schedule, !lineup ou !results"
                 logging.info(
                     f"Mensagem de '{user_id}' ignorada (não é comando): {data}"
                 )
