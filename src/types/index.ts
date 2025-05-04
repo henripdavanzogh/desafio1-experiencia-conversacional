@@ -7,10 +7,8 @@ export interface Message {
 
 export interface MessageInputProps {
   onSendMessage: (text: string) => void;
-  // onAddMessage?: (sender: string, text: string) => void; //  onAddMessage prop
 }
 
 export interface MessageListProps {
   messages: Message[];
-  currentUserId?: string;
 }

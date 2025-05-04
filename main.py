@@ -38,24 +38,24 @@ class ConnectionManager:
     def __init__(self):
         self.active_connections: Dict[str, WebSocket] = {}
 
-    async def connect(self, websocket: WebSocket, client_id: str):
+    async def connect(self, websocket: WebSocket, user_id: str):
         await websocket.accept()
-        self.active_connections[client_id] = websocket
-        logging.info(f"Cliente '{client_id}' conectado.")
+        self.active_connections[user_id] = websocket
+        logging.info(f"Usuário '{user_id}' conectado.")
 
-    def disconnect(self, client_id: str):
-        websocket = self.active_connections.pop(client_id, None)
+    def disconnect(self, user_id: str):
+        websocket = self.active_connections.pop(user_id, None)
         if websocket:
-            logging.info(f"Cliente '{client_id}' desconectado.")
+            logging.info(f"Usuário '{user_id}' desconectado.")
 
-    async def send_personal_message(self, message: str, client_id: str):
-        websocket = self.active_connections.get(client_id)
+    async def send_personal_message(self, message: str, user_id: str):
+        websocket = self.active_connections.get(user_id)
         if websocket:
             try:
                 await websocket.send_text(message)
             except Exception as e:
-                self.disconnect(client_id)
-                logging.warning(f"Erro send_personal para {client_id}: {e}")
+                self.disconnect(user_id)
+                logging.warning(f"Erro send_personal para {user_id}: {e}")
 
 
 manager = ConnectionManager()
@@ -83,7 +83,7 @@ def process_command(command: str) -> str:
     if lower_cmd == "!schedule":
         schedule = furia_data.get("schedule", [])
         if schedule:
-            response_lines = ["📅 **Próximos Jogos Agendados:**"]
+            response_lines = ["📅 Próximos Jogos:"]
             max_items_to_show = 3
             count = 0
             for game in schedule:
@@ -93,7 +93,7 @@ def process_command(command: str) -> str:
                 tournament = game.get("tournament", "?")
                 date_str = format_game_date(game.get("date"))
                 response_lines.append(
-                    f"- vs {opponent} ({tournament}) em {date_str} (BRT)"
+                    f" FURIA vs {opponent} ({tournament}) em {date_str} (BRT)"
                 )
                 count += 1
             if count > 0:
@@ -105,7 +105,7 @@ def process_command(command: str) -> str:
     elif lower_cmd == "!lineup":
         lineup = furia_data.get("lineup", [])
         if lineup:
-            response_lines = ["👥 **Line-up Atual:**"]
+            response_lines = ["👥 Line-up Atual:"]
             for p in lineup:
                 response_lines.append(f"- {p.get('name', '?')} ({p.get('role', '?')})")
             response = "\n".join(response_lines)
@@ -114,7 +114,7 @@ def process_command(command: str) -> str:
     elif lower_cmd == "!results":
         results = furia_data.get("results", [])
         if results:
-            response_lines = ["📊 **Últimos Resultados:**"]
+            response_lines = ["📊 Últimos Resultados:"]
             max_items_to_show = 3
             count = 0
             for result in results:
@@ -123,7 +123,7 @@ def process_command(command: str) -> str:
                 opponent = result.get("opponent", "?")
                 score = result.get("score", "?")
                 tournament = result.get("tournament", "?")
-                response_lines.append(f"- FURIA {score} {opponent} ({tournament})")
+                response_lines.append(f" FURIA {score} {opponent} ({tournament})")
                 count += 1
             if count > 0:
                 response = "\n".join(response_lines)

@@ -1,13 +1,9 @@
 import React from 'react';
 import { MessageListProps } from '../../types/index'; // Importa o tipo Message
 
-const MessageList: React.FC<MessageListProps> = ({
-  messages,
-  currentUserId,
-}) => {
+const MessageList: React.FC<MessageListProps> = ({ messages }) => {
   const getSenderStyle = (sender: string): React.CSSProperties => {
-    console.log(sender);
-    if (sender === currentUserId) {
+    if (sender === 'user') {
       return {
         alignSelf: 'flex-end',
         backgroundColor: 'var(--furia-gray-dark-2)',
@@ -40,7 +36,7 @@ const MessageList: React.FC<MessageListProps> = ({
             ...getSenderStyle(msg.sender), // Aplica o estilo simplificado
           }}
         >
-          {msg.sender === 'bot' && <strong>FURIA Bot:</strong>}
+          {msg.sender === 'bot' && <strong>FURIA Bot: </strong>}
           <span>{msg.text}</span>
           <div>
             {new Date(msg.timestamp).toLocaleTimeString('pt-BR', {
