@@ -1,4 +1,4 @@
-# Chat FURIA - Desafio Blip: Experiência Conversacional
+# FURIA Chat - Desafio Blip: Experiência Conversacional
 
 ![Logo da FURIA (Exemplo)](https://upload.wikimedia.org/wikipedia/pt/f/f9/Furia_Esports_logo.png)
 
@@ -26,7 +26,7 @@ A aplicação consiste em uma interface de chat onde o usuário pode enviar mens
 - **Frontend:**
   - React
   - TypeScript
-  - Create React App - especifique qual usou
+  - Vite
   - React Router DOM (para navegação)
   - uuid (para gerar IDs)
   - Styled-Components
