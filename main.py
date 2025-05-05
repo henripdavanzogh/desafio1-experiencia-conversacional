@@ -165,6 +165,3 @@ async def websocket_endpoint(websocket: WebSocket, user_id: str):
 @app.get("/")
 def read_root():
     return {"Status": "Servidor do Chat FURIA no ar!"}
-
-
-# uvicorn main:app --reload --host 0.0.0.0 --port 8000
