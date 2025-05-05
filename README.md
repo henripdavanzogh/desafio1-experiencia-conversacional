@@ -2,7 +2,7 @@
 
 ![Logo da FURIA (Exemplo)](https://upload.wikimedia.org/wikipedia/pt/f/f9/Furia_Esports_logo.png)
 
-Este projeto é uma aplicação web de chat desenvolvida como parte do **Desafio #1: Experiência Conversacional [NORMAL]** proposto pela Blip. O objetivo é criar uma experiência conversacional para os fãs do time de CS da FURIA, permitindo que acompanhem informações sobre a equipe através de comandos interativos.
+Este projeto é uma aplicação web de chat desenvolvida como parte do **Desafio #1: Experiência Conversacional [NORMAL]**. O objetivo é criar uma experiência conversacional para os fãs do time de CS da FURIA, permitindo que acompanhem informações sobre a equipe através de comandos interativos.
 
 ## 🚀 Sobre o Projeto
 
