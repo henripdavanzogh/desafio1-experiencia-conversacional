@@ -1,4 +1,4 @@
-# FURIA Chat - Desafio Blip: Experiência Conversacional
+# FURIA Chat - Desafio: Experiência Conversacional
 
 ![Logo da FURIA (Exemplo)](https://upload.wikimedia.org/wikipedia/pt/f/f9/Furia_Esports_logo.png)
 
@@ -59,13 +59,13 @@ Siga os passos abaixo para configurar e executar o projeto na sua máquina:
 ```bash
 git clone https://github.com/henripdavanzogh/desafio1-experiencia-conversacional.git
 cd desafio1-experiencia-conversacional
-
-3. Configure o Ambiente Python (Backend):
+```
+**3. Configure o Ambiente Python (Backend):**
 
 Crie um ambiente virtual (recomendado):
-
+```bash
 python -m venv .venv
-
+```
 Ative o ambiente virtual:
 
 Windows (Cmd/PowerShell): .\.venv\Scripts\activate
@@ -75,42 +75,42 @@ MacOS/Linux (bash/zsh): source .venv/bin/activate
 (Você verá (.venv) no início do prompt do terminal)
 
 Instale as dependências Python a partir do arquivo requirements.txt:
-
+```bash
 pip install -r requirements.txt
-
-4. Configure o Ambiente Node.js (Frontend):
+```
+**4. Configure o Ambiente Node.js (Frontend):**
 
 Instale as dependências do Node.js:
-
+```bash
 npm install
 # ou
 yarn install
+```
+**5. Execute a Aplicação (Dois Terminais):**
 
-5. Execute a Aplicação (Dois Terminais):
-
-Terminal 1 (Backend):
+*Terminal 1 (Backend):*
 
 Certifique-se de que o ambiente virtual Python (.venv) está ativo.
 
 Inicie o servidor FastAPI/Uvicorn:
-
+```bash
 uvicorn main:app --reload --host 0.0.0.0 --port 8000
-
-Terminal 2 (Frontend):
+```
+*Terminal 2 (Frontend):*
 
 Inicie o servidor de desenvolvimento React/Vite:
-
+```bash
 npm run dev
 # ou
 yarn dev
-
-6. Acesse a Aplicação:
+```
+**6. Acesse a Aplicação:**
 
 Abra seu navegador e acesse a URL fornecida pelo servidor de desenvolvimento do frontend (geralmente http://localhost:5173).
 
 Navegue até a página do chat e interaja com os comandos!
 
-📝 Limitações Atuais
+📝 _Limitações Atuais_
 Interação User-Bot Apenas: A comunicação Fã-Fã não está implementada nesta versão. Mensagens normais são ignoradas pelo backend.
 
 Dados Estáticos: As informações do Bot vêm de um arquivo JSON local e não são atualizadas dinamicamente de fontes externas.
