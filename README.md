@@ -68,9 +68,9 @@ python -m venv .venv
 ```
 Ative o ambiente virtual:
 
-Windows (Cmd/PowerShell): .\.venv\Scripts\activate
+Windows(cmd): .\.venv\Scripts\activate
 
-MacOS/Linux (bash/zsh): source .venv/bin/activate
+MacOS/Linux - (bash/zsh): source .venv/bin/activate
 
 (Você verá (.venv) no início do prompt do terminal)
 
@@ -106,14 +106,9 @@ yarn dev
 ```
 **6. Acesse a Aplicação:**
 
-Abra seu navegador e acesse a URL fornecida pelo servidor de desenvolvimento do frontend (geralmente http://localhost:5173).
+Abra seu navegador e acesse a URL fornecida pelo servidor de desenvolvimento do frontend (geralmente http://localhost:5173). Navegue até a página do chat e interaja com os comandos!
 
-Navegue até a página do chat e interaja com os comandos!
-
-📝 _Limitações Atuais_
-Interação User-Bot Apenas: A comunicação Fã-Fã não está implementada nesta versão. Mensagens normais são ignoradas pelo backend.
-
-Dados Estáticos: As informações do Bot vêm de um arquivo JSON local e não são atualizadas dinamicamente de fontes externas.
-
-Sem Contas de Usuário: Não há sistema de login ou persistência de identidade de usuário.
-```
+📝 **Limitações Atuais** _(por enquanto):_
+- Interação User-Bot apenas: A comunicação Fã-Fã não está implementada nesta versão. Mensagens normais são ignoradas pelo backend.
+- Dados Estáticos: As informações do Bot vêm de um arquivo JSON local e não são atualizadas dinamicamente de fontes externas.
+- Sem Contas de Usuário: Não há sistema de login ou autenticação de identidade de usuário.
